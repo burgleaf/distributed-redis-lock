@@ -70,7 +70,7 @@ public class RedisLockTest {
         jedisConnectionFactory.setPassword("");
         jedisConnectionFactory.setTimeout(100000);
         jedisConnectionFactory.afterPropertiesSet();
-        redisLock = new RedisLock.Builder(jedisConnectionFactory, "SINGLE")
+        redisLock = new RedisLock.Builder(jedisConnectionFactory)
                 .lockPrefix("lock_")
                 .sleepTime(100)
                 .build();

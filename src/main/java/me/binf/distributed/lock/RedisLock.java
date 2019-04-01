@@ -2,7 +2,6 @@ package me.binf.distributed.lock;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.data.redis.connection.RedisClusterConnection;
 import org.springframework.data.redis.connection.RedisConnection;
 import org.springframework.data.redis.connection.jedis.JedisConnectionFactory;
 import redis.clients.jedis.Jedis;
@@ -20,16 +19,16 @@ public class RedisLock {
      * time millisecond
      */
     private static final int TIME = 1000;
+
     private static Logger logger = LoggerFactory.getLogger(RedisLock.class);
+
     private String lockPrefix;
     private int sleepTime;
     private JedisConnectionFactory jedisConnectionFactory;
-    private String type;
 
 
     private RedisLock(Builder builder) {
         this.jedisConnectionFactory = builder.jedisConnectionFactory;
-        this.type = builder.type;
         this.lockPrefix = builder.lockPrefix;
         this.sleepTime = builder.sleepTime;
     }
@@ -40,15 +39,8 @@ public class RedisLock {
      * @return
      */
     private Object getConnection() {
-        Object connection;
-        if (ConnectionType.SINGLE.name().equals(type)) {
-            RedisConnection redisConnection = jedisConnectionFactory.getConnection();
-            connection = redisConnection.getNativeConnection();
-        } else {
-            RedisClusterConnection clusterConnection = jedisConnectionFactory.getClusterConnection();
-            connection = clusterConnection.getNativeConnection();
-        }
-        return connection;
+        RedisConnection redisConnection = jedisConnectionFactory.getConnection();
+        return redisConnection.getNativeConnection();
     }
 
 
@@ -186,9 +178,7 @@ public class RedisLock {
     }
 
 
-    public enum ConnectionType {
-        SINGLE, CLUSTER
-    }
+
 
     public static class Builder {
         private static final String DEFAULT_LOCK_PREFIX = "LOCK_";
@@ -199,14 +189,12 @@ public class RedisLock {
 
         private JedisConnectionFactory jedisConnectionFactory = null;
 
-        private String type;
 
         private String lockPrefix = DEFAULT_LOCK_PREFIX;
         private int sleepTime = DEFAULT_SLEEP_TIME;
 
-        public Builder(JedisConnectionFactory jedisConnectionFactory, String type) {
+        public Builder(JedisConnectionFactory jedisConnectionFactory) {
             this.jedisConnectionFactory = jedisConnectionFactory;
-            this.type = type;
         }
 
         public Builder lockPrefix(String lockPrefix) {
