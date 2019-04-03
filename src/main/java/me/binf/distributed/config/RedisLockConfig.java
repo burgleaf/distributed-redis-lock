@@ -9,14 +9,13 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.connection.jedis.JedisConnectionFactory;
 
 
 @Configuration
 @ComponentScan({"me.binf.distributed.aop", "me.binf.distributed.properties"})
 //是否有 redis 配置的校验，如果没有配置则不会加载改配置，也就是当前插件并不会生效
-@Conditional(CheckReqCondition.class)
+@Conditional(RedisLockCondition.class)
 public class RedisLockConfig {
 
 
@@ -25,13 +24,10 @@ public class RedisLockConfig {
     @Autowired
     private RedisLockProperties redisLockProperties;
 
-
-
     @Bean
     public RedisLock build(JedisConnectionFactory jedisConnectionFactory) {
         String prefix = redisLockProperties.getLockPrefix();
         Integer sleepTime = redisLockProperties.getSleepTime();
-
         RedisLock.Builder builder = null;
         builder = new RedisLock.Builder(jedisConnectionFactory);
 

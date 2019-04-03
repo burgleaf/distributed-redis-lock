@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>me.binf</groupId>
-    <artifactId>distributed-redis-lock</artifactId>
+    <artifactId>redis-lock-spring-boot-starter</artifactId>
     <version>0.1</version>
     <packaging>jar</packaging>
 
